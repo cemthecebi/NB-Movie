@@ -1,8 +1,17 @@
+from tkinter import *
+from tkinter.filedialog import askopenfilename
+import tkinter.messagebox
+
 import pandas as pd 
 import numpy as np 
 from collections import defaultdict
 import re
 
+
+
+
+root = Tk(className=" Naive Movie Comment Prediction")
+root.geometry("500x300")
 
 def preprocess_string(str_arg):
     cleaned_str=re.sub('[^a-z\s]+',' ',str_arg,flags=re.IGNORECASE) 
@@ -95,47 +104,78 @@ class NaiveBayes:
                 
         return np.array(predictions) 
 
-""" KAGGLEEEEEEE"""
+""" KAGGLE"""
 
-training_set=pd.read_csv('./data/labeledTrainData.tsv',sep='\t') # reading the training data-set
+def import_train_data():
+    cvs_file_path=askopenfilename()
+    return cvs_file_path
 
-#getting training set examples labels
-y_train=training_set['sentiment'].values
-x_train=training_set['review'].values
-
-"""
-    Again - it's not a problem at all if you didnt understand this block of code - You should just know that some
-    train & test data is being loaded and saved in their corresponding variables
-
-"""
-
-from sklearn.model_selection import train_test_split
-train_data,test_data,train_labels,test_labels=train_test_split(x_train,y_train,shuffle=True,test_size=0.25,random_state=42,stratify=y_train)
-classes=np.unique(train_labels)
-
-# Training phase....
-
-nb=NaiveBayes(classes)
-nb.train(train_data,train_labels)
-
-# Testing phase 
-
-pclasses=nb.test(test_data)
-test_acc=np.sum(pclasses==test_labels)/float(test_labels.shape[0])
-
-print ("Test Set Accuracy: ",test_acc) # Output : Test Set Accuracy:  0.84224 :)
+def import_test_data():
+    cvs_file_path=askopenfilename()
+    return cvs_file_path
 
 
-# Loading the kaggle test dataset
-test=pd.read_csv('./data/testData.tsv',sep='\t')
-Xtest=test.review.values
+def addTrainTest():
+    ##TO-DO bu kısımı tkiner üzerinden aktif edeceksin.
+    #training_set=pd.read_csv('./data/labeledTrainData.tsv',sep='\t') # reading the training data-set
+    file_path=import_train_data()
+    training_set=pd.read_csv(file_path,sep="\t")
 
-#generating predictions....
-pclasses=nb.test(Xtest) 
+    #getting training set examples labels
+    y_train=training_set['sentiment'].values
+    x_train=training_set['review'].values
 
-#writing results to csv to uplaoding on kaggle!
-kaggle_df=pd.DataFrame(data=np.column_stack([test["id"].values,pclasses]),columns=["id","sentiment"])
-kaggle_df.to_csv("./naive_bayes_model1.csv",index=False)
-print ('Predcitions Generated and saved to naive_bayes_model.csv')
+    """
+        Again - it's not a problem at all if you didnt understand this block of code - You should just know that some
+        train & test data is being loaded and saved in their corresponding variables
+
+    """
+
+    from sklearn.model_selection import train_test_split
+    train_data,test_data,train_labels,test_labels=train_test_split(x_train,y_train,shuffle=True,test_size=0.25,random_state=42,stratify=y_train)
+    classes=np.unique(train_labels)
+
+    # Training phase....
+    global nb
+    nb=NaiveBayes(classes)
+    nb.train(train_data,train_labels)
+
+    # Testing phase 
+
+    pclasses=nb.test(test_data)
+    test_acc=np.sum(pclasses==test_labels)/float(test_labels.shape[0])
+
+    #print ("Test Set Accuracy: ",test_acc) # Output : Test Set Accuracy:  0.84224 :)
+    tkinter.messagebox.showinfo("Test Accuracy",test_acc)
 
 
+def finalPrediction():
+    file_path=import_test_data()
+    # Loading the kaggle test dataset
+    test=pd.read_csv(file_path,sep='\t')
+    Xtest=test.review.values
+
+    #generating predictions....
+    pclasses=nb.test(Xtest) 
+
+    #writing results to csv to uplaoding on kaggle!
+    kaggle_df=pd.DataFrame(data=np.column_stack([test["id"].values,pclasses]),columns=["id","sentiment"])
+
+    #TO-DO bu kısımda kullanıcı için browse kısmı açılacak ve kullancıı dosyaı kaydetmek istediği lokasyonu seçecek.
+    kaggle_df.to_csv("./naive_bayes_model1.csv",index=False)
+    #print ('Predcitions Generated and saved to naive_bayes_model.csv')
+    tkinter.messagebox.showinfo("SUCCESS",'Predictions Generated and saved to naive_bayes_model.csv')
+
+
+
+Label(root,text="File Path").grid(row=0,column=0)
+
+Button(root, text='Browse Labeled Train Data Set',command=addTrainTest).grid(row=1, column=1)
+#Button(root, text='Close',command=root.destroy).grid(row=1, column=1)
+Button(root, text='Do the Prediction!',command=finalPrediction).grid(row=2, column=1)
+
+
+
+
+
+root.mainloop()
