@@ -168,11 +168,11 @@ def finalPrediction():
 
 
 
-Label(root,text="File Path").grid(row=0,column=0)
 
-Button(root, text='Browse Labeled Train Data Set',command=addTrainTest).grid(row=1, column=1)
+Button(root,bg="#BEBEBE", text='Browse Labeled Train Data Set', font='Helvetica 12 bold',command=addTrainTest).grid(row=1, column=5, padx=120, pady=50)
 #Button(root, text='Close',command=root.destroy).grid(row=1, column=1)
-Button(root, text='Do the Prediction!',command=finalPrediction).grid(row=2, column=1)
+Button(root,bg="#BEBEBE", text='Do the Prediction!', font='Helvetica 12 bold',command=finalPrediction).grid(row=2, column=5)
+status = Label(root, text="Processing…", bd=1, relief=SUNKEN, anchor=W)
 
 
 
