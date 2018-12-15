@@ -143,9 +143,10 @@ def import_test_data():
 
 
 def get_train_test():
+    
     file_path=import_train_data()
     training_set=pd.read_csv(file_path,sep="\t")
-
+    tkinter.messagebox.showinfo("Training ","Train is started please wait...")
     #getting training set examples labels
     y_train=training_set['sentiment'].values
     x_train=training_set['review'].values
@@ -169,6 +170,7 @@ def get_train_test():
 def final_predict():
     file_path=import_test_data()
     # kaggle datasetin yüklenmesi
+    tkinter.messagebox.showinfo("Predict ","Prediction is started please wait...")
     test=pd.read_csv(file_path,sep='\t')
     Xtest=test.review.values
 
@@ -185,9 +187,7 @@ def final_predict():
 
 
 Button(root,bg="#BEBEBE", text='Browse Labeled Train Data Set', font='Helvetica 12 bold',command=get_train_test).grid(row=1, column=5, padx=120, pady=50)
-#Button(root, text='Close',command=root.destroy).grid(row=1, column=1)
 Button(root,bg="#BEBEBE", text='Do the Prediction!', font='Helvetica 12 bold',command=final_predict).grid(row=2, column=5)
 status = Label(root, text="Processing…", bd=1, relief=SUNKEN, anchor=W)
-
 #uygulama ppenceresi kapanana kadar programın çalışmasını sağlar
 root.mainloop()
